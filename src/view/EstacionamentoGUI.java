@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class EstacionamentoGUI extends JFrame implements ActionListener, WindowListener {
-    //Atributos
+
     private static final int CAPACIDADE = 10; //total de vagas do estacionamento
 
     private JLabel lblPlaca, lblHoras;
@@ -25,23 +25,23 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
     private JScrollPane scroll;
     private Dimension dimFrame, dimLabel, dimTextField, dimButton, dimScroll;
 
-    //Dados 100% em memoria
+
     private List<TicketEstacionamento> patio;
     private double totalArrecadado;
 
-    //Construtor
+
     public EstacionamentoGUI() {
         patio = new ArrayList<>();
         totalArrecadado = 0;
 
-        //Tamanho dos elementos
+
         dimFrame = new Dimension(600, 540);
         dimLabel = new Dimension(190, 20);
         dimTextField = new Dimension(150, 20);
         dimButton = new Dimension(165, 25);
         dimScroll = new Dimension(540, 290);
 
-        //Aparencia da janela
+
         this.setTitle("Estacionamento Rotativo");
         this.setSize(dimFrame);
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); //quem fecha e o WindowListener
@@ -50,7 +50,7 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         this.setLayout(null);
         this.addWindowListener(this);
 
-        //Elementos
+
         lblPlaca = new JLabel("Placa (7 caracteres):");
         lblPlaca.setSize(dimLabel);
         lblPlaca.setLocation(25, 25);
@@ -89,7 +89,6 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         atualizarRelatorio();
     }
 
-    //Cria o botao ja com tamanho, posicao e listener (evita repetir codigo)
     private JButton criarBotao(String texto, int x, int y) {
         JButton botao = new JButton(texto);
         botao.setSize(dimButton);
@@ -99,7 +98,6 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         return botao;
     }
 
-    //Eventos dos botoes
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnSair) {
@@ -122,7 +120,6 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         txtPlaca.requestFocus();
     }
 
-    //Operacao 1: registrar entrada de um veiculo
     private void cadastrarEntrada() {
         String placa = lerPlaca();
         if (placa == null) {
@@ -142,7 +139,6 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         }
     }
 
-    //Cria o ticket ou lanca a exception se nao der para estacionar
     private TicketEstacionamento estacionar(String placa) throws VagaNaoDisponivelException {
         if (buscarPorPlaca(placa) != null) {
             throw new VagaNaoDisponivelException("O veículo " + placa + " já está no pátio.");
@@ -153,7 +149,6 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         return new TicketEstacionamento(placa, proximaVagaLivre());
     }
 
-    //Procura o menor numero de vaga que nao esta em uso
     private int proximaVagaLivre() {
         for (int vaga = 1; vaga <= CAPACIDADE; vaga++) {
             boolean ocupada = false;
@@ -166,10 +161,9 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
                 return vaga;
             }
         }
-        return -1; //nao chega aqui porque estacionar() ja confere a lotacao
+        return -1;
     }
 
-    //Operacao 2: pesquisar um veiculo pela placa
     private void pesquisarPlaca() {
         String placa = lerPlaca();
         if (placa == null) {
@@ -185,7 +179,7 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         }
     }
 
-    //Operacao 3: calcular, cobrar e liberar a vaga
+
     private void processarSaida() {
         String placa = lerPlaca();
         if (placa == null) {
@@ -198,7 +192,6 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
             return;
         }
         LocalDateTime saida = LocalDateTime.now();
-        //Se preencheu as horas simuladas, a saida acontece N horas depois da entrada
         if (!txtHoras.getText().trim().isEmpty()) {
             try {
                 int horas = Integer.parseInt(txtHoras.getText().trim());
@@ -217,7 +210,7 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         ticket.setSaida(saida);
         double valor = ticket.calcularPrecoEstadia();
         totalArrecadado += valor;
-        patio.remove(ticket); //libera a vaga
+        patio.remove(ticket);
         txtPlaca.setText("");
         txtHoras.setText("");
         atualizarRelatorio();
@@ -229,7 +222,7 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
                 "Saída", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    //Le e valida a placa digitada. Devolve null se for invalida.
+
     private String lerPlaca() {
         String placa = txtPlaca.getText().trim().toUpperCase();
         if (!placa.matches("[A-Z0-9]{7}")) {
@@ -250,7 +243,7 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         return null;
     }
 
-    //Mostra o extrato dos veiculos que estao no patio
+
     private void atualizarRelatorio() {
         StringBuilder sb = new StringBuilder();
         sb.append("=== EXTRATO DO PÁTIO ===\n");
@@ -275,7 +268,7 @@ public class EstacionamentoGUI extends JFrame implements ActionListener, WindowL
         }
     }
 
-    //WindowListener: so o windowClosing faz algo, os outros ficam vazios
+
     @Override
     public void windowClosing(WindowEvent e) {
         sair();
